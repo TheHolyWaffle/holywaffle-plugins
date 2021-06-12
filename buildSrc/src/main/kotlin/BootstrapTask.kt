@@ -51,11 +51,11 @@ open class BootstrapTask : DefaultTask() {
                     val releases = ArrayList<JsonBuilder>()
 
                     releases.add(JsonBuilder(
-                            "version" to it.project.version
-//                            "requires" to ProjectVersions.apiVersion,
-//                            "date" to formatDate(Date()),
-//                            "url" to "${project.rootProject.extra.get("GithubUrl")}/blob/master/release/${it.project.name}-${it.project.version}.jar?raw=true",
-//                            "sha512sum" to hash(plugin.readBytes())
+                            "version" to it.project.version,
+                            "requires" to ProjectVersions.apiVersion,
+                            "date" to formatDate(Date()),
+                            "url" to "${project.rootProject.extra.get("GithubUrl")}/blob/master/release/${it.project.name}-${it.project.version}.jar?raw=true",
+                            "sha512sum" to hash(plugin.readBytes())
                     ))
 
                     val pluginObject = JsonBuilder(
