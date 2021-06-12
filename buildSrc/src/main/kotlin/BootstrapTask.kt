@@ -28,8 +28,7 @@ open class BootstrapTask : DefaultTask() {
 
     private fun getBootstrap(filename: String): JSONArray? {
         val bootstrapFile = File(filename).readLines()
-
-        return JSONObject("{\"plugins\":$bootstrapFile}").getJSONArray("plugins")
+        return JSONObject("{\"plugins\":$bootstrapFile}").getJSONArray("plugins").getJSONArray(0)
     }
 
     @TaskAction
