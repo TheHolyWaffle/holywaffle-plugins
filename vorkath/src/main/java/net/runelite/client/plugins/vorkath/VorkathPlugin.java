@@ -203,7 +203,6 @@ public class VorkathPlugin extends Plugin {
             return;
         }
 
-
         if (vorkath == null) {
             return;
         }
@@ -222,15 +221,20 @@ public class VorkathPlugin extends Plugin {
         boolean isSpawnDead = zombifiedSpawn != null && zombifiedSpawn.isDead();
         boolean enableQuickPrayer = !isAcidPhase && !isVorkathDead && !isSpawnAlive;
         boolean canEat = !isVorkathDead;
-        boolean canEatBetweenPhase = canEat && (isSpawnDead || isAcidPhase);
+        boolean canEatBetweenPhase = canEat && (/*isSpawnDead ||*/ isAcidPhase);
         boolean canAttackVorkath = !isAcidPhase && !isVorkathDead && !isSpawnAlive /*&& isSpawnDead*/;
 
-        if (config.enablePrayer()) {
+        if (config.enablePrayer() && client.getBoostedSkillLevel(Skill.PRAYER) > 0) {
             toggleQuickPrayer(enableQuickPrayer);
         }
 
         WidgetItem itemToEat = null;
         if (canEat) {
+            if (itemToEat == null && client.getBoostedSkillLevel(Skill.HITPOINTS) <= 30) {
+                itemToEat = inventory.getWidgetItem(FOOD);
+                System.out.println("Eating emergency food");
+            }
+
             if (itemToEat == null && client.getVar(VarPlayer.POISON) >= 1000000) {
                 itemToEat = inventory.getWidgetItem(ANTI_VENOM);
                 System.out.println("Running out of anti-venom+ ");
@@ -298,7 +302,6 @@ public class VorkathPlugin extends Plugin {
         }
 
         //  System.out.println(event.getMessage() + " | " + event.getType());
-
         if (event.getMessage().contains("You drink some of your extended super antifire potion.")) {
             extendedAntifireActive = true;
         } else if (event.getMessage().contains("antifire potion has expired")) {
