@@ -30,60 +30,54 @@ import net.runelite.client.config.ConfigItem;
 
 @ConfigGroup("VorkathConfig")
 
-public interface VorkathConfig extends Config
-{
-	@ConfigItem(
-		keyName = "enablePrayer",
-		name = "Re-enable quick prayers",
-		description = "Re-enables quick prayers after the pink dragonfire attack.",
-		position = 0
-	)
-	default boolean enablePrayer()
-	{
-		return true;
-	}
+public interface VorkathConfig extends Config {
+    @ConfigItem(
+            keyName = "enablePrayer",
+            name = "Re-enable quick prayers",
+            description = "Re-enables quick prayers after the pink dragonfire attack.",
+            position = 0
+    )
+    default boolean enablePrayer() {
+        return true;
+    }
 
-	@ConfigItem(
-			keyName = "dodgeBomb",
-			name = "Dodge fire bombs",
-			description = "Dodges the vertical fire bomb attack.",
-			position = 1
-	)
-	default boolean dodgeBomb()
-	{
-		return true;
-	}
+    @ConfigItem(
+            keyName = "dodgeBomb",
+            name = "Dodge fire bombs",
+            description = "Dodges the vertical fire bomb attack.",
+            position = 1
+    )
+    default boolean dodgeBomb() {
+        return true;
+    }
 
-	@ConfigItem(
-			keyName = "killSpawn",
-			name = "Cast crumble undead on spawn",
-			description = "Casts crumble undead when the Zombified spawn appears.",
-			position = 2
-	)
-	default boolean killSpawn()
-	{
-		return true;
-	}
+    @ConfigItem(
+            keyName = "killSpawn",
+            name = "Cast crumble undead on spawn",
+            description = "Casts crumble undead when the Zombified spawn appears.",
+            position = 2
+    )
+    default boolean killSpawn() {
+        return true;
+    }
 
-	@ConfigItem(
-			keyName = "fastRetaliate",
-			name = "Faster retaliate",
-			description = "Attacks Vorkath after moving/unfreezing faster.",
-			position = 3
-	)
-	default boolean fastRetaliate()
-	{
-		return true;
-	}
+    @ConfigItem(
+            keyName = "fastRetaliate",
+            name = "Faster retaliate",
+            description = "Attacks Vorkath after moving/unfreezing faster.",
+            position = 3
+    )
+    default boolean fastRetaliate() {
+        return true;
+    }
 
-/*	@ConfigItem(
-			keyName = "switchBolts",
-			name = "Switch bolts",
-			description = "Switches bolts at the ideal health threshold.",
-			position = 4
-	)
-	default boolean switchBolts()
-	{
-		return false;
-	}*/
+    @ConfigItem(
+            keyName = "switchBolts",
+            name = "Switch bolts",
+            description = "Switches bolts at the ideal health threshold.",
+            position = 4
+    )
+    default boolean switchBolts() {
+        return false;
+    }
 }

@@ -36,9 +36,12 @@ public class VorkathPlugin extends Plugin {
     private static final int VORKATH_REGION = 9023;
     private static final Set<Integer> ANTI_VENOM = Set.of(ItemID.ANTIVENOM1_12919, ItemID.ANTIVENOM2_12917, ItemID.ANTIVENOM3_12915, ItemID.ANTIVENOM4_12913);
     private static final Set<Integer> FOOD = Set.of(ItemID.SHARK, ItemID.COOKED_KARAMBWAN);
-    private static final Set<Integer> PRAYER = Set.of(143, 141, 139, 2434);
+    private static final Set<Integer> PRAYER = Set.of(ItemID.PRAYER_POTION1, ItemID.PRAYER_POTION2, ItemID.PRAYER_POTION3, ItemID.PRAYER_POTION4);
     private static final Set<Integer> RANGE_BOOST = Set.of(ItemID.DIVINE_RANGING_POTION1, ItemID.DIVINE_RANGING_POTION2, ItemID.DIVINE_RANGING_POTION3, ItemID.DIVINE_RANGING_POTION4);
-
+    private static final Set<Integer> ANTI_FIRE_SET = Set.of(ItemID.ANTIFIRE_POTION1, ItemID.ANTIFIRE_POTION2, ItemID.ANTIFIRE_POTION3, ItemID.ANTIFIRE_POTION4, ItemID.SUPER_ANTIFIRE_POTION1, ItemID.SUPER_ANTIFIRE_POTION2, ItemID.SUPER_ANTIFIRE_POTION3, ItemID.SUPER_ANTIFIRE_POTION4,
+            ItemID.EXTENDED_ANTIFIRE1, ItemID.EXTENDED_ANTIFIRE2, ItemID.EXTENDED_ANTIFIRE3, ItemID.EXTENDED_ANTIFIRE4, ItemID.EXTENDED_SUPER_ANTIFIRE1, ItemID.EXTENDED_SUPER_ANTIFIRE2, ItemID.EXTENDED_SUPER_ANTIFIRE3, ItemID.EXTENDED_SUPER_ANTIFIRE4);
+    private static final Set<Integer> DIAMOND_SET = Set.of(ItemID.DIAMOND_DRAGON_BOLTS_E, ItemID.DIAMOND_BOLTS_E);
+    private static final Set<Integer> RUBY_SET = Set.of(ItemID.RUBY_DRAGON_BOLTS_E, ItemID.RUBY_BOLTS_E);
 
     @Inject
     private VorkathConfig config;
@@ -75,8 +78,6 @@ public class VorkathPlugin extends Plugin {
     private NPC zombifiedSpawn;
     private List<WorldPoint> acidSpots = new ArrayList<>();
     private List<WorldPoint> acidFreePath = new ArrayList<>();
-    private final Set<Integer> DIAMOND_SET = Set.of(ItemID.DIAMOND_DRAGON_BOLTS_E, ItemID.DIAMOND_BOLTS_E);
-    private final Set<Integer> RUBY_SET = Set.of(ItemID.RUBY_DRAGON_BOLTS_E, ItemID.RUBY_BOLTS_E);
     private boolean freezeAttackSpawned = false;
     private boolean extendedAntifireActive = false;
     private boolean isAcidPhase = false;
@@ -166,9 +167,7 @@ public class VorkathPlugin extends Plugin {
     @Subscribe
     private void onProjectileSpawned(ProjectileSpawned event) {
         final Projectile projectile = event.getProjectile();
-
         final WorldPoint loc = client.getLocalPlayer().getWorldLocation();
-
         final LocalPoint localLoc = LocalPoint.fromWorld(client, loc);
 
         if (projectile.getId() == ProjectileID.VORKATH_BOMB_AOE && config.dodgeBomb()) {
@@ -192,11 +191,20 @@ public class VorkathPlugin extends Plugin {
             return;
         }
 
-        if (config.enablePrayer()) {
-            toggleQuickPrayer(true);
+        if (!isAtVorkath()) {
+            return;
         }
 
-        if (!isAtVorkath() || vorkath == null) {
+        if (client.getVarps()[173] == 1) {
+            System.out.println("Toggling run off");
+            Widget widget = client.getWidget(WidgetInfo.MINIMAP_TOGGLE_RUN_ORB);
+            MenuEntry entry = new MenuEntry("Toggle Run", "", 1, MenuAction.CC_OP.getId(), -1, widget.getId(), false);
+            utils.doActionClientTick(entry, widget.getBounds(), 2);
+            return;
+        }
+
+
+        if (vorkath == null) {
             return;
         }
 
@@ -215,6 +223,7 @@ public class VorkathPlugin extends Plugin {
         boolean enableQuickPrayer = !isAcidPhase && !isVorkathDead && !isSpawnAlive;
         boolean canEat = !isVorkathDead;
         boolean canEatBetweenPhase = canEat && (isSpawnDead || isAcidPhase);
+        boolean canAttackVorkath = !isAcidPhase && !isVorkathDead && !isSpawnAlive;
 
         if (config.enablePrayer()) {
             toggleQuickPrayer(enableQuickPrayer);
@@ -224,48 +233,72 @@ public class VorkathPlugin extends Plugin {
         if (canEat) {
             if (itemToEat == null && client.getVar(VarPlayer.POISON) >= 1000000) {
                 itemToEat = inventory.getWidgetItem(ANTI_VENOM);
-                System.out.println("Running out of anti-venom+ " + itemToEat);
+                System.out.println("Running out of anti-venom+ ");
             }
         }
 
         if (canEatBetweenPhase) {
             if (itemToEat == null && (client.getRealSkillLevel(Skill.HITPOINTS) - client.getBoostedSkillLevel(Skill.HITPOINTS)) > 22) {
                 itemToEat = inventory.getWidgetItem(FOOD);
-                System.out.println("Health is getting low, looking for food to eat " + itemToEat);
+                System.out.println("Health is getting low, looking for food to eat");
             }
 
-            if (itemToEat == null && client.getBoostedSkillLevel(Skill.PRAYER) <= 50) {
+            if (itemToEat == null && client.getBoostedSkillLevel(Skill.PRAYER) <= 30) {
                 itemToEat = inventory.getWidgetItem(PRAYER);
-                System.out.println("Prayer is below, looking for prayer pot at index " + itemToEat);
+                System.out.println("Prayer is below, looking for prayer pot");
             }
 
             if (itemToEat == null && client.getBoostedSkillLevel(Skill.RANGED) <= client.getRealSkillLevel(Skill.RANGED)) {
                 itemToEat = inventory.getWidgetItem(RANGE_BOOST);
-                System.out.println("Activating ranging boost " + itemToEat);
+                System.out.println("Activating ranging boost");
             }
 
             if (!extendedAntifireActive) {
-                //itemToEat = getFirstItemIndex(ItemID.EXTENDED_ANTIFIRE1, ItemID.EXTENDED_ANTIFIRE2, ItemID.EXTENDED_ANTIFIRE3, ItemID.EXTENDED_ANTIFIRE4);
-                System.out.println("Antifire is down " /*+ itemToEat*/);
+                itemToEat = inventory.getWidgetItem(ANTI_FIRE_SET);
+                System.out.println("Activating ranging boost");
             }
         }
 
         if (itemToEat != null && ticksSinceEating > 2) {
+            System.out.println("Using item with id: " + itemToEat.getId());
             useItem(itemToEat);
             ticksSinceEating = 0;
-        } else {
-            ticksSinceEating++;
+
+            if (canAttackVorkath) {
+                System.out.println("Attacking vorkath: " + !isAcidPhase + " " + !isVorkathDead + " " + !isSpawnAlive);
+                utils.doNpcActionMsTime(vorkath, MenuAction.NPC_SECOND_OPTION.getId(), 600);
+            }
+            return;
+        }
+
+        ticksSinceEating++;
+
+        int health = calculateHealth(vorkath, 750);
+        if ((health > 0 || isVorkathDead) && config.switchBolts()) {
+            Set<Integer> boltsToEquip = (health < 266 && !isVorkathDead) ? DIAMOND_SET : RUBY_SET;
+            if (!player.isItemEquipped(boltsToEquip) && inventory.containsItem(boltsToEquip)) {
+                System.out.println("Vorkath health is " + health + ", death status: " + isVorkathDead + ", switching to " + boltsToEquip);
+                WidgetItem bolts = inventory.getWidgetItem(boltsToEquip);
+                if (bolts != null) {
+                    utils.doItemActionMsTime(bolts, MenuAction.ITEM_SECOND_OPTION.getId(), WidgetInfo.INVENTORY.getId(), 100);
+
+                    if (canAttackVorkath) {
+                        utils.doNpcActionMsTime(vorkath, MenuAction.NPC_SECOND_OPTION.getId(), 600);
+                    }
+                }
+            }
         }
 
     }
 
     @Subscribe
     private void onChatMessage(ChatMessage event) {
-        if (event.getType() != ChatMessageType.GAMEMESSAGE) {
+        if (event.getType() != ChatMessageType.SPAM && event.getType() != ChatMessageType.GAMEMESSAGE) {
             return;
         }
 
-        System.out.println(event.getMessage());
+        //  System.out.println(event.getMessage() + " | " + event.getType());
+
         if (event.getMessage().contains("You drink some of your extended super antifire potion.")) {
             extendedAntifireActive = true;
         } else if (event.getMessage().contains("antifire potion has expired")) {
@@ -279,7 +312,7 @@ public class VorkathPlugin extends Plugin {
 
 
     private boolean isAtVorkath() {
-        return IntStream.of(client.getMapRegions()).anyMatch(x -> x == VORKATH_REGION);
+        return client.isInInstancedRegion() && IntStream.of(client.getMapRegions()).anyMatch(x -> x == VORKATH_REGION);
     }
 
 
@@ -310,23 +343,19 @@ public class VorkathPlugin extends Plugin {
     }
 
 
-/*	private int calculateHealth(NPC target)
-	{
-		// Based on OpponentInfoOverlay HP calculation & taken from the default slayer plugin
-		if (target == null || target.getName() == null)
-		{
-			return -1;
-		}
+    private int calculateHealth(NPC target, int maxHealth) {
+        // Based on OpponentInfoOverlay HP calculation & taken from the default slayer plugin
+        if (target == null || target.getName() == null) {
+            return -1;
+        }
 
-		final int healthScale = target.getHealthScale();
-		final int healthRatio = target.getHealthRatio();
-		final Integer maxHealth = 750;
+        final int healthScale = target.getHealthScale();
+        final int healthRatio = target.getHealthRatio();
 
-		if (healthRatio < 0 || healthScale <= 0 || maxHealth == null)
-		{
-			return -1;
-		}
+        if (healthRatio < 0 || healthScale <= 0) {
+            return -1;
+        }
 
-		return (int)((maxHealth * healthRatio / healthScale) + 0.5f);
-	}*/
+        return (int) ((maxHealth * healthRatio / healthScale) + 0.5f);
+    }
 }
