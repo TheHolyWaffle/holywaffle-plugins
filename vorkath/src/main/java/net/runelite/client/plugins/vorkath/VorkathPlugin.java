@@ -223,7 +223,7 @@ public class VorkathPlugin extends Plugin {
         boolean enableQuickPrayer = !isAcidPhase && !isVorkathDead && !isSpawnAlive;
         boolean canEat = !isVorkathDead;
         boolean canEatBetweenPhase = canEat && (isSpawnDead || isAcidPhase);
-        boolean canAttackVorkath = !isAcidPhase && !isVorkathDead && !isSpawnAlive;
+        boolean canAttackVorkath = !isAcidPhase && !isVorkathDead && !isSpawnAlive /*&& isSpawnDead*/;
 
         if (config.enablePrayer()) {
             toggleQuickPrayer(enableQuickPrayer);
@@ -253,7 +253,7 @@ public class VorkathPlugin extends Plugin {
                 System.out.println("Activating ranging boost");
             }
 
-            if (!extendedAntifireActive) {
+            if (itemToEat == null && !extendedAntifireActive) {
                 itemToEat = inventory.getWidgetItem(ANTI_FIRE_SET);
                 System.out.println("Activating ranging boost");
             }
@@ -265,7 +265,7 @@ public class VorkathPlugin extends Plugin {
             ticksSinceEating = 0;
 
             if (canAttackVorkath) {
-                System.out.println("Attacking vorkath: " + !isAcidPhase + " " + !isVorkathDead + " " + !isSpawnAlive);
+                System.out.println("Attacking vorkath: " + !isAcidPhase + " " + !isVorkathDead + " " + !isSpawnAlive + " " + isSpawnDead);
                 utils.doNpcActionMsTime(vorkath, MenuAction.NPC_SECOND_OPTION.getId(), 600);
             }
             return;

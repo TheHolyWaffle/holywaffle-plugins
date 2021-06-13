@@ -48,7 +48,7 @@ public interface VorkathConfig extends Config {
             position = 1
     )
     default boolean dodgeBomb() {
-        return true;
+        return false;
     }
 
     @ConfigItem(
@@ -68,7 +68,7 @@ public interface VorkathConfig extends Config {
             position = 3
     )
     default boolean fastRetaliate() {
-        return true;
+        return false;
     }
 
     @ConfigItem(
@@ -78,6 +78,6 @@ public interface VorkathConfig extends Config {
             position = 4
     )
     default boolean switchBolts() {
-        return false;
+        return true;
     }
 }
