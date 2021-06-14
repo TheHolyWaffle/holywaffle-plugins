@@ -235,6 +235,11 @@ public class VorkathPlugin extends Plugin {
                 System.out.println("Eating emergency food");
             }
 
+            if (itemToEat == null && client.getBoostedSkillLevel(Skill.PRAYER) <= 5) {
+                itemToEat = inventory.getWidgetItem(PRAYER);
+                System.out.println("Eating emergency prayer pot");
+            }
+
             if (itemToEat == null && client.getVar(VarPlayer.POISON) >= 1000000) {
                 itemToEat = inventory.getWidgetItem(ANTI_VENOM);
                 System.out.println("Running out of anti-venom+ ");
