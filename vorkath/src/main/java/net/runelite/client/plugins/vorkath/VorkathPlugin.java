@@ -178,7 +178,7 @@ public class VorkathPlugin extends Plugin {
             } else {
                 walk.sceneWalk(dodgeLeft, 0, 0);
             }
-            timeout = 4;
+            timeout = 5;
         } else if (projectile.getId() == ProjectileID.VORKATH_ICE) {
             walk.sceneWalk(localLoc, 0, 100);
         }
