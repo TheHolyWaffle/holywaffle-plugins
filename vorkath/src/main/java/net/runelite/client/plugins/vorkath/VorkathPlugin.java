@@ -82,6 +82,7 @@ public class VorkathPlugin extends Plugin {
     private boolean extendedAntifireActive = false;
     private boolean isAcidPhase = false;
     private long ticksSinceEating = 0;
+    private boolean isDodgingBomb = false;
 
 
     public VorkathPlugin() {
@@ -171,6 +172,7 @@ public class VorkathPlugin extends Plugin {
         final LocalPoint localLoc = LocalPoint.fromWorld(client, loc);
 
         if (projectile.getId() == ProjectileID.VORKATH_BOMB_AOE && config.dodgeBomb()) {
+            isDodgingBomb = true;
             LocalPoint dodgeRight = new LocalPoint(localLoc.getX() + 256, localLoc.getY());
             LocalPoint dodgeLeft = new LocalPoint(localLoc.getX() - 256, localLoc.getY());
             if (localLoc.getX() < 6208) {
@@ -211,9 +213,14 @@ public class VorkathPlugin extends Plugin {
             timeout--;
         }
 
-        if (timeout == 1 && config.fastRetaliate()) {
-            utils.doNpcActionMsTime(vorkath, MenuAction.NPC_SECOND_OPTION.getId(), 0);
-            return;
+        if (timeout == 1) {
+            isDodgingBomb = false;
+
+            if (config.fastRetaliate()) {
+                utils.doNpcActionMsTime(vorkath, MenuAction.NPC_SECOND_OPTION.getId(), 0);
+                return;
+            }
+
         }
 
         boolean isVorkathDead = vorkath.isDead() || vorkath.getCombatLevel() == 0;
@@ -222,7 +229,7 @@ public class VorkathPlugin extends Plugin {
         boolean enableQuickPrayer = !isAcidPhase && !isVorkathDead && !isSpawnAlive;
         boolean canEat = !isVorkathDead;
         boolean canEatBetweenPhase = canEat && (/*isSpawnDead ||*/ isAcidPhase);
-        boolean canAttackVorkath = !isAcidPhase && !isVorkathDead && !isSpawnAlive /*&& isSpawnDead*/;
+        boolean canAttackVorkath = !isAcidPhase && !isVorkathDead && !isSpawnAlive && !isDodgingBomb /*&& isSpawnDead*/;
 
         if (config.enablePrayer() && client.getBoostedSkillLevel(Skill.PRAYER) > 0) {
             toggleQuickPrayer(enableQuickPrayer);
@@ -284,7 +291,7 @@ public class VorkathPlugin extends Plugin {
 
         int health = calculateHealth(vorkath, 750);
         if ((health > 0 || isVorkathDead) && config.switchBolts()) {
-            Set<Integer> boltsToEquip = (health < 266 && !isVorkathDead) ? DIAMOND_SET : RUBY_SET;
+            Set<Integer> boltsToEquip = (health < 300 && !isVorkathDead) ? DIAMOND_SET : RUBY_SET;
             if (!player.isItemEquipped(boltsToEquip) && inventory.containsItem(boltsToEquip)) {
                 System.out.println("Vorkath health is " + health + ", death status: " + isVorkathDead + ", switching to " + boltsToEquip);
                 WidgetItem bolts = inventory.getWidgetItem(boltsToEquip);
@@ -329,6 +336,7 @@ public class VorkathPlugin extends Plugin {
         vorkath = null;
         freezeAttackSpawned = false;
         zombifiedSpawn = null;
+        isDodgingBomb = false;
     }
 
     private void toggleQuickPrayer(boolean enabled) {

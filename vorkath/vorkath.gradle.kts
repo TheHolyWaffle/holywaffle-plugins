@@ -25,7 +25,7 @@ import ProjectVersions.openosrsVersion
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-version = "0.0.8"
+version = "0.0.9"
 
 project.extra["PluginName"] = "Vorkath" // This is the name that is used in the external plugin manager panel
 project.extra["PluginDescription"] = "Automatically dodges fireballs, re-enables quick prayers and eats food" // This is the description that is used in the external plugin manager panel
