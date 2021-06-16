@@ -174,13 +174,12 @@ public class VorkathPlugin extends Plugin {
             LocalPoint dodgeRight = new LocalPoint(localLoc.getX() + 256, localLoc.getY());
             LocalPoint dodgeLeft = new LocalPoint(localLoc.getX() - 256, localLoc.getY());
             if (localLoc.getX() < 6208) {
-                walk.sceneWalk(dodgeRight, 0, 100);
+                walk.sceneWalk(dodgeRight, 0, 0);
             } else {
-                walk.sceneWalk(dodgeLeft, 0, 100);
+                walk.sceneWalk(dodgeLeft, 0, 0);
             }
             timeout = 4;
-        }
-        if (projectile.getId() == ProjectileID.VORKATH_ICE) {
+        } else if (projectile.getId() == ProjectileID.VORKATH_ICE) {
             walk.sceneWalk(localLoc, 0, 100);
         }
     }
