@@ -223,12 +223,13 @@ public class VorkathPlugin extends Plugin {
 
         }
 
+        boolean isVorkathSpawning = vorkath.getId() == 8058;
         boolean isVorkathDead = vorkath.isDead() || vorkath.getCombatLevel() == 0;
         boolean isSpawnAlive = zombifiedSpawn == null ? freezeAttackSpawned : !zombifiedSpawn.isDead();
         boolean isSpawnDead = zombifiedSpawn != null && zombifiedSpawn.isDead();
         boolean enableQuickPrayer = !isAcidPhase && !isVorkathDead && !isSpawnAlive;
-        boolean canEat = !isVorkathDead;
-        boolean canEatBetweenPhase = canEat && (/*isSpawnDead ||*/ isAcidPhase);
+        boolean canEat = !isVorkathDead || isVorkathSpawning;
+        boolean canEatBetweenPhase = (!isVorkathDead && isAcidPhase) || isVorkathSpawning;
         boolean canAttackVorkath = !isAcidPhase && !isVorkathDead && !isSpawnAlive && !isDodgingBomb /*&& isSpawnDead*/;
 
         if (config.enablePrayer() && client.getBoostedSkillLevel(Skill.PRAYER) > 0) {
