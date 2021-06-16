@@ -191,6 +191,7 @@ public class VorkathPlugin extends Plugin {
         }
 
         if (!isAtVorkath()) {
+            resetVorkath();
             return;
         }
 
@@ -324,6 +325,7 @@ public class VorkathPlugin extends Plugin {
 
 
     private void resetVorkath() {
+        isAcidPhase = false;
         vorkath = null;
         freezeAttackSpawned = false;
         zombifiedSpawn = null;
